@@ -1,3 +1,4 @@
+import RootProvider from '@/providers/RootProvider'
 import type { Metadata } from 'next'
 import { JetBrains_Mono, Montserrat } from 'next/font/google' // Use Inter em vez de Geist
 import './globals.css'
@@ -30,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body className={`${montSerrant.variable} ${jetBrainsMono.variable} antialiased`}>
-        {children}
+        <RootProvider>{children}</RootProvider>
       </body>
     </html>
   )
