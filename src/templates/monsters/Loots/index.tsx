@@ -1,42 +1,31 @@
 import CheckboxToggle from '@/components/CheckboxToggle';
 import FormSection from '@/components/FormSection';
-import { Button } from '@/components/ui/button';
+import { FormField } from '@/components/ui/form';
 import useMonsters from '@/hooks/useMonsters';
 import LootsInputs from './inputs';
 
 const Loots = () => {
-  const {
-    hasIsLoot,
-    loots,
-    handleAddLoot,
-    handleRemoveLoot,
-    handleLootChange,
-    handleCheckboxisLootChange,
-  } = useMonsters();
+  const { form } = useMonsters();
+  const loots = form.watch('loot') || [];
+
   return (
     <FormSection title="Saques (Loots)">
-      <CheckboxToggle
-        id="hasIsLoot"
-        label="Possui saques?"
-        checked={hasIsLoot}
-        onCheckedChange={handleCheckboxisLootChange}
+      <FormField
+        control={form.control}
+        name="isLoot"
+        render={({ field }) => (
+          <CheckboxToggle
+            id="hasIsLoot"
+            label="Possui saques?"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+          />
+        )}
       />
-      {hasIsLoot && (
+      {form.watch('isLoot') && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Lista de Saques</h3>
-            <Button variant="outline" onClick={handleAddLoot}>
-              Adicionar Saque
-            </Button>
-          </div>
           {loots.map((loot, index) => (
-            <LootsInputs
-              key={index}
-              index={index}
-              loot={loot}
-              onLootChange={handleLootChange}
-              onRemoveLoot={handleRemoveLoot}
-            />
+            <LootsInputs key={loot.id || index} index={index} />
           ))}
         </div>
       )}

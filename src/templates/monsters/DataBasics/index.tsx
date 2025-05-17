@@ -18,23 +18,24 @@ import {
 import useMonsters from '@/hooks/useMonsters';
 
 const DataBasics = () => {
-  const { form, raceMonsters, monsterData, handleNumberChange } = useMonsters();
+  const { form, raceMonsters } = useMonsters();
+
   return (
     <FormSection title="Dados Básicos">
       <Columns cols={4}>
         <FormField
           control={form.control}
           name="name"
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel>Nome *</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="text"
                   disabled={form.formState.isSubmitting}
-                  placeholder="Ex.: Demon"
-                  error={fieldState.error?.message}
+                  placeholder="Ex.: Demon (obrigatório)"
+                  onChange={(e) => field.onChange(e.target.value)}
                 />
               </FormControl>
               <FormMessage />
@@ -44,22 +45,22 @@ const DataBasics = () => {
         <FormField
           control={form.control}
           name="race"
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>Raça</FormLabel>
+              <FormLabel>Raça *</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
                 disabled={form.formState.isSubmitting}
               >
                 <FormControl>
-                  <SelectTrigger error={!!fieldState.error}>
+                  <SelectTrigger>
                     <SelectValue placeholder="Selecione uma raça" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {raceMonsters.map((race) => (
-                    <SelectItem key={race.code} value={race.code ?? ''}>
+                    <SelectItem key={race.code} value={race.code}>
                       {race.label}
                     </SelectItem>
                   ))}
@@ -69,20 +70,20 @@ const DataBasics = () => {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="experience"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Experiência</FormLabel>
+              <FormLabel>Experiência *</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="number"
-                  value={monsterData.experience}
-                  onChange={handleNumberChange}
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                   disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
                 />
               </FormControl>
               <FormMessage />
@@ -94,14 +95,15 @@ const DataBasics = () => {
           name="speed"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Velocidade</FormLabel>
+              <FormLabel>Velocidade *</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="number"
-                  value={monsterData.speed}
-                  onChange={handleNumberChange}
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                   disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
                 />
               </FormControl>
               <FormMessage />
@@ -112,17 +114,18 @@ const DataBasics = () => {
       <Columns cols={2}>
         <FormField
           control={form.control}
-          name="heath.min"
+          name="health.min"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Vida Mínima</FormLabel>
+              <FormLabel>Vida Mínima *</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="number"
-                  value={monsterData.heath.min}
-                  onChange={handleNumberChange}
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                   disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
                 />
               </FormControl>
               <FormMessage />
@@ -131,17 +134,18 @@ const DataBasics = () => {
         />
         <FormField
           control={form.control}
-          name="heath.max"
+          name="health.max"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Vida Máxima</FormLabel>
+              <FormLabel>Vida Máxima *</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  type="string"
-                  value={monsterData.heath.max}
-                  onChange={handleNumberChange}
+                  type="number"
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
                   disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
                 />
               </FormControl>
               <FormMessage />

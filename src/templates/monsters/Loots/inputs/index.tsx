@@ -1,98 +1,121 @@
 'use client';
 
+import Columns from '@/components/Columns';
+import CTA from '@/components/CTA';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import type { LootType } from '@/models/lootType';
+import useMonsters from '@/hooks/useMonsters';
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
 
 type LootProps = {
   index: number;
-  loot: LootType;
-  onLootChange: (index: number, updatedLoot: LootType) => void;
-  onRemoveLoot: (index: number) => void;
 };
 
-const LootsInputs = ({
-  index,
-  loot,
-  onLootChange,
-  onRemoveLoot,
-}: LootProps) => {
-  const [hasCount, setHasCount] = useState(loot.isCountMax || false);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    onLootChange(index, {
-      ...loot,
-      [name]: name === 'countmax' ? Number(value) : value,
-    });
-  };
-
-  const handleCheckboxChange = (checked: boolean) => {
-    setHasCount(checked);
-    onLootChange(index, {
-      ...loot,
-      isCountMax: checked,
-      countmax: checked ? loot.countmax : 0,
-    });
-  };
+const LootsInputs = ({ index }: LootProps) => {
+  const { form, handleAddLoot, handleRemoveLoot } = useMonsters();
 
   return (
     <div className="space-y-2">
-      <Label>Item: {loot.name || 'Novo item'}</Label>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <div className="space-y-1">
-          <Label htmlFor={`loot-name-${index}`}>Loot Name</Label>
-          <Input
-            id={`loot-name-${index}`}
-            name="name"
-            value={loot.name}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor={`loot-chance-${index}`}>Loot Chance</Label>
-          <Input
-            id={`loot-chance-${index}`}
-            name="chance"
-            type="number"
-            value={loot.chance}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id={`loot-hasCount-${index}`}
-          checked={hasCount}
-          onCheckedChange={handleCheckboxChange}
+      <FormField
+        control={form.control}
+        name={`loot.${index}.isCountMax`}
+        render={({ field }) => (
+          <FormItem className="flex items-center space-x-2">
+            <FormControl>
+              <Checkbox
+                id={`loot-hasCount-${index}`}
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <FormLabel className="cursor-pointer">Possui count?</FormLabel>
+          </FormItem>
+        )}
+      />
+      <Columns cols={3}>
+        <FormField
+          control={form.control}
+          name={`loot.${index}.name`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Item: {field.value || 'Novo item'}</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  value={field.value ?? ''}
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Nome do item"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <Label htmlFor={`loot-hasCount-${index}`}>Possui count?</Label>
-      </div>
-      {hasCount && (
-        <div className="space-y-1">
-          <Label htmlFor={`loot-countmax-${index}`}>Loot Count Max</Label>
-          <Input
-            id={`loot-countmax-${index}`}
-            name="countmax"
-            type="number"
-            value={loot.countmax}
-            onChange={handleChange}
-            required
+        <FormField
+          control={form.control}
+          name={`loot.${index}.chance`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Chance</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {form.watch(`loot.${index}.isCountMax`) && (
+          <FormField
+            control={form.control}
+            name={`loot.${index}.countmax`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantidade máxima</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    disabled={form.formState.isSubmitting}
+                    placeholder="Mínimo 1"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-      )}
-      <Button
-        variant="destructive"
-        onClick={() => onRemoveLoot(index)}
-        className="flex items-center gap-2"
-      >
-        <Trash2 className="h-4 w-4" />
-        Remover
-      </Button>
+        )}
+      </Columns>
+      <CTA>
+        <Button
+          variant="destructive"
+          onClick={() => handleRemoveLoot(index)}
+          className="flex items-center gap-2"
+          disabled={form.getValues('loot').length === 1}
+        >
+          <Trash2 className="h-4 w-4" />
+          Remover
+        </Button>
+        <Button type="button" onClick={handleAddLoot}>
+          Novo saque
+        </Button>
+      </CTA>
     </div>
   );
 };

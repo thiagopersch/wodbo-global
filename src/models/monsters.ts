@@ -4,7 +4,7 @@ export type Monsters = {
   race?: string;
   experience?: number;
   speed?: number;
-  heath: {
+  health: {
     min?: number;
     max?: number;
   };
@@ -19,7 +19,7 @@ export type Monsters = {
     corpse?: number;
   };
   isAttack?: boolean;
-  attack: {
+  attacks: {
     name?: string;
     interval?: number;
     minValueAttack?: number;
@@ -61,7 +61,7 @@ export type Monsters = {
     undefinedPercent?: number;
   };
   isSummons?: boolean;
-  summons: {
+  summons?: {
     name?: string;
     interval?: number;
     chance?: number;
@@ -73,9 +73,9 @@ export type Monsters = {
   };
   isLoot?: boolean;
   loot: {
-    name?: string;
-    isCountMax?: boolean;
-    countmax?: number;
-    chance?: number;
+    name: string;
+    isCountMax: boolean;
+    countmax: number;
+    chance: number;
   }[];
 };

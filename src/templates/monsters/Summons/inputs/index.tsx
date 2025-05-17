@@ -1,95 +1,120 @@
 'use client';
 
+import Columns from '@/components/Columns';
 import CTA from '@/components/CTA';
 import { Button } from '@/components/ui/button';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import useMonsters from '@/hooks/useMonsters';
-import type { Summons } from '@/models/summons';
 import { Trash2 } from 'lucide-react';
 
 type SummonsProps = {
   index: number;
-  summons: Summons;
-  onAttackChange: (index: number, updatedSummon: Summons) => void;
-  onRemoveAttack: (index: number) => void;
 };
 
-const SummonsInputs = ({
-  index,
-  summons,
-  onAttackChange,
-  onRemoveAttack,
-}: SummonsProps) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    onAttackChange(index, {
-      ...summons,
-      [name]: name === 'name' ? value : Number(value),
-    });
-  };
-
-  const { handleAddSummons } = useMonsters();
+const SummonsInputs = ({ index }: SummonsProps) => {
+  const { form, handleAddSummon, handleRemoveSummon } = useMonsters();
 
   return (
     <div className="space-y-2">
-      <Label>Summon: {summons.name || 'Novo summon'}</Label>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4">
-        <div className="space-y-1">
-          <Label htmlFor={`summons-name-${index}`}>Nome</Label>
-          <Input
-            id={`summons-name-${index}`}
-            name="name"
-            value={summons.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor={`summons-interval-${index}`}>Intervalo em ms</Label>
-          <Input
-            id={`summons-interval-${index}`}
-            name="interval"
-            type="number"
-            value={summons.interval}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor={`summons-chance-${index}`}>Chance</Label>
-          <Input
-            id={`summons-chance-${index}`}
-            name="chance"
-            type="number"
-            value={summons.chance}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor={`summons-qtdMax-${index}`}>Quantidade Máxima</Label>
-          <Input
-            id={`summons-qtdMax-${index}`}
-            name="qtdMax"
-            type="number"
-            value={summons.qtdMax}
-            onChange={handleChange}
-            required
-          />
-        </div>
-      </div>
+      <Columns cols={4}>
+        <FormField
+          control={form.control}
+          name={`summons.${index}.name`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Summon: {field.value || 'Novo summon'} *</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  value={field.value ?? ''}
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Nome da invocação (obrigatório)"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={`summons.${index}.interval`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Intervalo em ms *</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={`summons.${index}.chance`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Chance *</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name={`summons.${index}.qtdMax`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Quantidade Máxima *</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  disabled={form.formState.isSubmitting}
+                  placeholder="Mínimo 1"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </Columns>
       <CTA>
         <Button
+          type="button"
           variant="destructive"
-          onClick={() => onRemoveAttack(index)}
-          disabled={index === 0}
+          onClick={() => handleRemoveSummon(index)}
+          disabled={form.getValues('summons')?.length === 1}
         >
           <Trash2 className="h-4 w-4" />
           Remover
         </Button>
-        <Button type="button" variant="outline" onClick={handleAddSummons}>
-          Adicionar Invocação
+        <Button type="button" variant="default" onClick={handleAddSummon}>
+          Adicionar um novo
         </Button>
       </CTA>
     </div>

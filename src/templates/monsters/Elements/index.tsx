@@ -9,32 +9,36 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { MonsterFormData } from '@/hooks/schema';
 import useMonsters from '@/hooks/useMonsters';
 
 const Elements: React.FC = () => {
-  const {
-    form,
-    hasElements,
-    elements,
-    monsterData,
-    handleNumberChange,
-    handleCheckboxElementsChange,
-  } = useMonsters();
+  const { form, elements } = useMonsters();
+
+  // Type the elements array to match the keys of elementsSchema
+  const elementKeys = elements as (keyof MonsterFormData['elements'])[];
+
   return (
     <FormSection title="Elementos">
-      <CheckboxToggle
-        id="hasElements"
-        label="Possui elementos?"
-        checked={hasElements}
-        onCheckedChange={handleCheckboxElementsChange}
+      <FormField
+        control={form.control}
+        name="isElements"
+        render={({ field }) => (
+          <CheckboxToggle
+            id="hasElements"
+            label="Possui elementos?"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+          />
+        )}
       />
-      {hasElements && (
-        <Columns cols={12}>
-          {elements.map((field) => (
+      {form.watch('isElements') && (
+        <Columns cols={6}>
+          {elementKeys.map((field) => (
             <FormField
               key={field}
               control={form.control}
-              name={`elements.${field}` as keyof typeof monsterData}
+              name={`elements.${field}`}
               render={({ field: formField }) => (
                 <FormItem>
                   <FormLabel>
@@ -55,12 +59,10 @@ const Elements: React.FC = () => {
                     <Input
                       {...formField}
                       type="number"
-                      value={
-                        monsterData.elements?.[
-                          field as keyof typeof monsterData.elements
-                        ]
+                      value={formField.value ?? ''}
+                      onChange={(e) =>
+                        formField.onChange(Number(e.target.value))
                       }
-                      onChange={handleNumberChange}
                       disabled={form.formState.isSubmitting}
                     />
                   </FormControl>

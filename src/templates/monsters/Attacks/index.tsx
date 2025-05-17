@@ -1,39 +1,31 @@
 import CheckboxToggle from '@/components/CheckboxToggle';
 import FormSection from '@/components/FormSection';
+import { FormField } from '@/components/ui/form';
 import useMonsters from '@/hooks/useMonsters';
-import React from 'react';
 import AttacksInputs from './inputs';
 
 const Attacks: React.FC = () => {
-  const {
-    attacks,
-    hasIsAttack,
-    handleCheckboxisAttackChange,
-    handleAttackChange,
-    handleRemoveAttack,
-  } = useMonsters();
+  const { form } = useMonsters();
+  const attacks = form.watch('attacks') || [];
 
   return (
     <FormSection title="Ataques">
-      <CheckboxToggle
-        id="hasIsAttack"
-        label="Possui ataques?"
-        checked={hasIsAttack}
-        onCheckedChange={handleCheckboxisAttackChange}
+      <FormField
+        control={form.control}
+        name="isAttack"
+        render={({ field }) => (
+          <CheckboxToggle
+            id="hasIsAttack"
+            label="Possui ataques?"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+          />
+        )}
       />
-      {hasIsAttack && (
+      {form.watch('isAttack') && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Lista de Ataques</h3>
-          </div>
           {attacks.map((attack, index) => (
-            <AttacksInputs
-              key={index}
-              index={index}
-              attack={attack}
-              onAttackChange={handleAttackChange}
-              onRemoveAttack={handleRemoveAttack}
-            />
+            <AttacksInputs key={attack.id || index} index={index} />
           ))}
         </div>
       )}

@@ -16,11 +16,11 @@ import Summons from './Summons';
 import Voice from './Voice';
 
 const AddMonsters: React.FC = () => {
-  const { handleSubmit, xmlString, form } = useMonsters();
+  const { form, xmlString, handleSubmit } = useMonsters();
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <DataBasics />
         <Looktypes />
         <Immunities />
@@ -33,7 +33,7 @@ const AddMonsters: React.FC = () => {
         <CTA>
           <Button
             type="submit"
-            className="md:max-m-0 m-8 h-12 w-full max-w-md"
+            className="m-8 h-12 w-1/4 max-w-md md:max-w-none"
             disabled={form.formState.isSubmitting}
           >
             Gerar XML
@@ -51,6 +51,7 @@ const AddMonsters: React.FC = () => {
             theme="vs-dark"
             loading="Gerando..."
             className="w-full"
+            options={{ readOnly: true }}
           />
         </div>
       )}

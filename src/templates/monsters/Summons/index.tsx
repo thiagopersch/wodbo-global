@@ -1,38 +1,31 @@
 import CheckboxToggle from '@/components/CheckboxToggle';
 import FormSection from '@/components/FormSection';
+import { FormField } from '@/components/ui/form';
 import useMonsters from '@/hooks/useMonsters';
 import SummonsInputs from './inputs';
 
 const Summons = () => {
-  const {
-    hasIsSummons,
-    handleCheckboxisSummonsChange,
-    summons,
-    handleSummonChange,
-    handleRemoveSummon,
-  } = useMonsters();
+  const { form } = useMonsters();
+  const summons = form.watch('summons') || [];
 
   return (
     <FormSection title="Invocações (Summons)">
-      <CheckboxToggle
-        id="hasIsSummons"
-        label="Possui invocações?"
-        checked={hasIsSummons}
-        onCheckedChange={handleCheckboxisSummonsChange}
+      <FormField
+        control={form.control}
+        name="isSummons"
+        render={({ field }) => (
+          <CheckboxToggle
+            id="hasIsSummons"
+            label="Possui invocações?"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+          />
+        )}
       />
-      {hasIsSummons && (
+      {form.watch('isSummons') && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Lista de Invocações</h3>
-          </div>
           {summons.map((summon, index) => (
-            <SummonsInputs
-              key={index}
-              index={index}
-              summons={summon}
-              onAttackChange={handleSummonChange}
-              onRemoveAttack={handleRemoveSummon}
-            />
+            <SummonsInputs key={summon.id || index} index={index} />
           ))}
         </div>
       )}

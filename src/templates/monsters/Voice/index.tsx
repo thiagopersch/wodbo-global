@@ -11,34 +11,35 @@ import { Input } from '@/components/ui/input';
 import useMonsters from '@/hooks/useMonsters';
 
 const Voice = () => {
-  const {
-    form,
-    hasIsVoices,
-    handleCheckboxisVoicesChange,
-    handleChangeVoice,
-    monsterData,
-  } = useMonsters();
+  const { form } = useMonsters();
+
   return (
     <FormSection title="Vozes (Voices)">
-      <CheckboxToggle
-        id="hasIsVoices"
-        label="Possui vozes?"
-        checked={hasIsVoices}
-        onCheckedChange={handleCheckboxisVoicesChange}
+      <FormField
+        control={form.control}
+        name="isVoices"
+        render={({ field }) => (
+          <CheckboxToggle
+            id="hasIsVoices"
+            label="Possui vozes?"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+          />
+        )}
       />
-      {hasIsVoices && (
+      {form.watch('isVoices') && (
         <FormField
           control={form.control}
           name="voices.message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mensagem da Voz</FormLabel>
+              <FormLabel>Mensagem da Voz *</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  value={monsterData.voices?.message}
-                  onChange={handleChangeVoice}
+                  value={field.value ?? ''}
                   disabled={form.formState.isSubmitting}
+                  placeholder="Mensagem da voz (obrigatório)"
                 />
               </FormControl>
               <FormMessage />

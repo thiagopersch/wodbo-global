@@ -8,43 +8,44 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form';
+import { MonsterFormData } from '@/hooks/schema';
 import useMonsters from '@/hooks/useMonsters';
 
 const Immunities: React.FC = () => {
-  const {
-    form,
-    hasImmunities,
-    immunities,
-    monsterData,
-    handleCheckboxImmunitiesChange,
-  } = useMonsters();
+  const { form, immunities } = useMonsters();
 
   return (
     <FormSection title="Imunidades">
-      <CheckboxToggle
-        id="hasImmunities"
-        label="Possui imunidades?"
-        checked={hasImmunities}
-        onCheckedChange={handleCheckboxImmunitiesChange}
+      <FormField
+        control={form.control}
+        name="isImmunities"
+        render={({ field }) => (
+          <CheckboxToggle
+            id="hasImmunities"
+            label="Possui imunidades?"
+            checked={field.value}
+            onCheckedChange={field.onChange}
+          />
+        )}
       />
-      {hasImmunities && (
+      {form.watch('isImmunities') && (
         <Columns cols={4}>
-          {immunities.map((field) => (
+          {immunities.map(({ code, label }) => (
             <FormField
-              key={field.code}
+              key={code}
               control={form.control}
-              name={`immunities.${field.code}` as keyof typeof monsterData}
+              name={
+                `immunities.${code}` as `immunities.${keyof MonsterFormData['immunities']}`
+              }
               render={({ field: formField }) => (
                 <FormItem className="flex items-center space-x-2">
                   <FormControl>
                     <Checkbox
-                      checked={!!formField.value}
+                      checked={formField.value}
                       onCheckedChange={formField.onChange}
                     />
                   </FormControl>
-                  <FormLabel className="cursor-pointer">
-                    {field.label}
-                  </FormLabel>
+                  <FormLabel className="cursor-pointer">{label}</FormLabel>
                 </FormItem>
               )}
             />
